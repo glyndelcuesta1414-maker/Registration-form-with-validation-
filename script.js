@@ -1,69 +1,64 @@
-$(document).ready(function(){
-
-  function validateField(input, message) {
-    let value = input.val().trim();
-    let error = input.next(".error");
-
-    if (value === "") {
-      input.addClass("error-border").removeClass("success-border");
-      error.text(message);
-      return false;
-    } else {
-      input.addClass("success-border").removeClass("error-border");
-      error.text("");
-      return true;
-    }
-  }
-
-  $("#name").on("keyup blur", function(){
-    validateField($("#name"), "Full Name is required.");
-  });
-
-  $("#email").on("keyup blur", function(){
-    validateField($("#email"), "Email is required.");
-  });
-
-  $("#phone").on("keyup blur", function(){
-    validateField($("#phone"), "Phone Number is required.");
-  });
-
-  $("#password").on("keyup blur", function(){
-    validateField($("#password"), "Password is required.");
-  });
-
-  $("#confirmPassword").on("keyup blur", function(){
-    let pass = $("#password").val();
-    let confirm = $("#confirmPassword").val();
-    let error = $("#confirmPassword").next(".error");
-
-    if (confirm === "") {
-      $("#confirmPassword").addClass("error-border").removeClass("success-border");
-      error.text("Please confirm password.");
-    } else if (pass !== confirm) {
-      $("#confirmPassword").addClass("error-border").removeClass("success-border");
-      error.text("Passwords do not match.");
-    } else {
-      $("#confirmPassword").addClass("success-border").removeClass("error-border");
-      error.text("");
-    }
-  });
-
-  $("#regForm").submit(function(e){
+document.getElementById("regForm").addEventListener("submit", function(e) {
     e.preventDefault();
-    // Validate all fields before showing success
-    let validName = validateField($("#name"), "Full Name is required.");
-    let validEmail = validateField($("#email"), "Email is required.");
-    let validPhone = validateField($("#phone"), "Phone Number is required.");
-    let validPass = validateField($("#password"), "Password is required.");
-    let confirmPass = $("#password").val() === $("#confirmPassword").val() && $("#confirmPassword").val() !== "";
 
-    if(validName && validEmail && validPhone && validPass && confirmPass){
-      alert("Registration Successful!");
-      $("#regForm")[0].reset();
-      $("input").removeClass("success-border error-border");
-    } else {
-      alert("Please fix the errors before submitting.");
+    let valid = true;
+
+    // Get inputs
+    const name = document.getElementById("name");
+    const email = document.getElementById("email");
+    const phone = document.getElementById("phone");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+
+    // Clear old errors
+    document.querySelectorAll(".error").forEach(e => e.textContent = "");
+
+    // Validate Name
+    if (name.value.trim() === "") {
+        setError(name, "Name is required");
+        valid = false;
     }
-  });
 
+    // Validate Email
+    if (email.value.trim() === "") {
+        setError(email, "Email is required");
+        valid = false;
+    } else if (!email.value.includes("@")) {
+        setError(email, "Enter a valid email");
+        valid = false;
+    }
+
+    // Validate Phone
+    if (phone.value.trim() === "") {
+        setError(phone, "Phone is required");
+        valid = false;
+    } else if (!/^[0-9]{11}$/.test(phone.value)) {
+        setError(phone, "Enter 11-digit number");
+        valid = false;
+    }
+
+    // Validate Password
+    if (password.value.trim() === "") {
+        setError(password, "Password is required");
+        valid = false;
+    }
+
+    // Confirm Password
+    if (confirmPassword.value.trim() === "") {
+        setError(confirmPassword, "Please confirm password");
+        valid = false;
+    } else if (password.value !== confirmPassword.value) {
+        setError(confirmPassword, "Passwords do not match");
+        valid = false;
+    }
+
+    // Success
+    if (valid) {
+        alert("Registration Successful!");
+        document.getElementById("regForm").reset();
+    }
 });
+
+function setError(input, message) {
+    input.nextElementSibling.textContent = message;
+}
